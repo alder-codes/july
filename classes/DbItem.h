@@ -15,7 +15,7 @@ public:
     bool remove(int id);
     std::vector<Item> listAll();
 
-private:
+  private:
     AppDatabase& db;
 };
 

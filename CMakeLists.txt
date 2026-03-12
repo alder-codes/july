@@ -3,7 +3,6 @@ project(July)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(July main.cpp UserInput.cpp AppDatabase.cpp Item.cpp DbItem.cpp
-        DbItem.cpp)
+add_executable(July main.cpp classes/UserInput.cpp classes/AppDatabase.cpp classes/Item.cpp classes/DbItem.cpp)
 
 target_link_libraries(July sqlite3)

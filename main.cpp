@@ -1,57 +1,84 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "UserInput.h"
-#include "AppDatabase.h"
-#include "Item.h"
-#include "DbItem.h"
+#include "classes/UserInput.h"
+#include "classes/AppDatabase.h"
+#include "classes/Item.h"
+#include "classes/DbItem.h"
 
 #define APP_DB "./JULY_DATA.DB"
 
-static bool input_on = true;
+void DisplayMenu();
+
+static bool main_loop = true;
+
+void DisplayItems(const std::vector<Item> &allItems)
+{
+  std::cout << "\nCurrent items in database (" << allItems.size() << "):" << std::endl;
+  for (const auto &item: allItems)
+  {
+    std::cout << " - " << item.getID() << ": " << item.getTitle() << " (Created: " << item.getCreated() << ")" <<
+        std::endl;
+  }
+}
 
 int main()
 {
   AppDatabase db(APP_DB);
-  if (!db.open()) {
+  if (!db.open())
+  {
     std::cerr << "Failed to open and initialize database." << std::endl;
     return 1;
   }
   std::cout << "Successfully connected to the database." << std::endl;
-  
+
   DbItem dbItem(db);
   UserInput input;
 
-  while ( input_on )
+  while (main_loop)
   {
-    std::cout << "Would you like to create a new item? (yes/no): ";
+    DisplayMenu();
+    std::cout << "Your selection: ";
     std::string response = input.getLine();
-
-    if (response == "yes" || response == "y" || response == "YES" || response == "Y") {
+    if (response == "0")
+    {
+      main_loop = false;
+    } else if (response == "1")
+    {
       std::cout << "Enter the title for the new item: ";
       std::string title = input.getLine();
-
-      // ID can be 0 or -1 as SQLite handles auto-increment for PRIMARY KEY
-      // Item constructor handles the default timestamp if not provided.
       Item newItem(0, title);
       if (dbItem.create(newItem)) {
         std::cout << "Item '" << title << "' has been saved to the database." << std::endl;
       } else {
         std::cerr << "Failed to save the item to the database." << std::endl;
       }
-    } else {
-      std::cout << "No new item created." << std::endl;
-      input_on = false;
+    } else if (response == "2")
+    {
+      std::vector<Item> allItems = dbItem.listAll();
+      DisplayItems(allItems);
+    } else if (response == "3")
+    {
+      std::cout << "Enter the ID of the item to remove: ";
+      std::string id_str = input.getLine();
+      int id = std::stoi(id_str);
+      dbItem.remove(id);
     }
   }
 
   // List all items to show the current state
   std::vector<Item> allItems = dbItem.listAll();
-  std::cout << "\nCurrent items in database (" << allItems.size() << "):" << std::endl;
-  for (const auto& item : allItems) {
-    std::cout << " - " << item.getID() << ": " << item.getTitle() << " (Created: " << item.getCreated() << ")" << std::endl;
-  }
+  DisplayItems(allItems);
 
   db.close();
   return 0;
+}
+
+
+void DisplayMenu()
+{
+  std::cout << "0. Exit" << std::endl;
+  std::cout << "1. Add item" << std::endl;
+  std::cout << "2. List items" << std::endl;
+  std::cout << "3. Remove item" << std::endl;
 }
