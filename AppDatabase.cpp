@@ -13,6 +13,13 @@ bool AppDatabase::open() {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
+    
+    // Create all required tables
+    if (!createItemsTable()) {
+        std::cerr << "Failed to create required tables." << std::endl;
+        return false;
+    }
+    
     return true;
 }
 

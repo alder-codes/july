@@ -5,13 +5,12 @@ DbItem::DbItem(AppDatabase& db) : db(db) {}
 
 bool DbItem::create(const Item& item) {
     sqlite3_stmt* stmt;
-    const char* sql = "INSERT INTO items (id, title, created) VALUES (?, ?, ?);";
+    const char* sql = "INSERT INTO items (title, created) VALUES (?, ?);";
     if (sqlite3_prepare_v2(db.getHandle(), sql, -1, &stmt, nullptr) != SQLITE_OK) {
         return false;
     }
-    sqlite3_bind_int(stmt, 1, item.getID());
-    sqlite3_bind_text(stmt, 2, item.getTitle().c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 3, item.getCreated().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, item.getTitle().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, item.getCreated().c_str(), -1, SQLITE_TRANSIENT);
     
     bool success = sqlite3_step(stmt) == SQLITE_DONE;
     sqlite3_finalize(stmt);
