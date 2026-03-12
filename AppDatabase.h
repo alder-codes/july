@@ -12,6 +12,8 @@ public:
     bool open();
     void close();
     bool execute(const std::string& sql);
+    bool createItemsTable();
+    sqlite3* getHandle() const;
 
 private:
     std::string dbPath;

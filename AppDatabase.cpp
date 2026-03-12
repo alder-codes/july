@@ -33,3 +33,11 @@ bool AppDatabase::execute(const std::string& sql) {
     }
     return true;
 }
+
+bool AppDatabase::createItemsTable() {
+    return execute("CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, title TEXT, created TEXT);");
+}
+
+sqlite3* AppDatabase::getHandle() const {
+    return db;
+}
