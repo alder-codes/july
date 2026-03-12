@@ -1,26 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include "classes/UserInput.h"
-#include "classes/AppDatabase.h"
-#include "classes/Item.h"
-#include "classes/DbItem.h"
-
-#define APP_DB "./JULY_DATA.DB"
-
-void DisplayMenu();
-
-static bool main_loop = true;
-
-void DisplayItems(const std::vector<Item> &allItems)
-{
-  std::cout << "\nCurrent items in database (" << allItems.size() << "):" << std::endl;
-  for (const auto &item: allItems)
-  {
-    std::cout << " - " << item.getID() << ": " << item.getTitle() << " (Created: " << item.getCreated() << ")" <<
-        std::endl;
-  }
-}
+#include "main.h"
 
 int main()
 {
@@ -63,6 +41,12 @@ int main()
       std::string id_str = input.getLine();
       int id = std::stoi(id_str);
       dbItem.remove(id);
+    } else if (response == "4")
+    {
+      std::cout << "Enter search query: ";
+      std::string query = input.getLine();
+      std::vector<Item> results = dbItem.search(query);
+      DisplayItems(results);
     }
   }
 
@@ -81,4 +65,16 @@ void DisplayMenu()
   std::cout << "1. Add item" << std::endl;
   std::cout << "2. List items" << std::endl;
   std::cout << "3. Remove item" << std::endl;
+  std::cout << "4. Search items" << std::endl;
+}
+
+
+void DisplayItems(const std::vector<Item> &allItems)
+{
+  std::cout << "\nCurrent items in database (" << allItems.size() << "):" << std::endl;
+  for (const auto &item: allItems)
+  {
+    std::cout << " - " << item.getID() << ": " << item.getTitle() << " (Created: " << item.getCreated() << ")" <<
+        std::endl;
+  }
 }

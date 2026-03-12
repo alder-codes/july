@@ -81,3 +81,24 @@ std::vector<Item> DbItem::listAll() {
     sqlite3_finalize(stmt);
     return items;
 }
+
+std::vector<Item> DbItem::search(const std::string& query) {
+    std::vector<Item> items;
+    sqlite3_stmt* stmt;
+    const char* sql = "SELECT id, title, created FROM items WHERE title LIKE ?;";
+    if (sqlite3_prepare_v2(db.getHandle(), sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return items;
+    }
+
+    std::string likeQuery = "%" + query + "%";
+    sqlite3_bind_text(stmt, 1, likeQuery.c_str(), -1, SQLITE_TRANSIENT);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        const char* title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        const char* created = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        items.emplace_back(id, title ? title : "", created ? created : "");
+    }
+    sqlite3_finalize(stmt);
+    return items;
+}

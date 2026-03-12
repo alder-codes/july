@@ -14,6 +14,7 @@ public:
     bool update(const Item& item);
     bool remove(int id);
     std::vector<Item> listAll();
+    std::vector<Item> search(const std::string& query);
 
   private:
     AppDatabase& db;
